@@ -1,28 +1,46 @@
-#! /usr/bin/env python
-##########################################################################
-# Copyright (C) CEA, 2016 - 2022
-# Distributed under the terms of the CeCILL-B license, as published by
-# the CEA-CNRS-INRIA. Refer to the LICENSE file or to
-# http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
-# for details.
-##########################################################################
-
 [project]
 name = "postgwas-tools"
 version = "0.0.1"
+description = "A collection of tools for post-GWAS analysis and annotation"
 authors = [
   { name="Antoine Dufournet", email="antoine.dufournet@cea.fr" },
 ]
-description = "A package to study GWAS results"
+keywords = ["GWAS", "genetics", "bioinformatics", "annotation"]
 readme = "README.md"
 requires-python = ">=3.9"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Bio-Informatics"
 ]
-license = "CeCILL"
-license-files = ["LICEN[CS]E*"]
+license = {file = "LICENSE"}
+
+dependencies = [
+    "pandas",
+    "numpy",
+    "matplotlib",
+    "scipy",
+    "seaborn",
+    "qmplot", 
+    "h5py"
+]
 
 [project.urls]
-Homepage = "https://github.com/Dufouranto0/2025_GWAS_annotation"
-Issues = "https://github.com/Dufouranto0/2025_GWAS_annotation/issues"
+Homepage = "https://github.com/Dufouranto0/postgwas-tools"
+Issues = "https://github.com/Dufouranto0/postgwas-tools/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.scripts]
+manhattan_plot = "postgwas_tools.annot.fuma.multi_manhattan_plot:main"
+light_manhattan_plot = "postgwas_tools.annot.fuma.light_manhattan_plot:main"
+QQ_plot = "postgwas_tools.annot.fuma.QQ_plot:main"
+leadSNP = "postgwas_tools.annot.fuma.leadSNP:main"
+loci = "postgwas_tools.annot.fuma.loci:main"
+
+extract_gencorr = "postgwas_tools.annot.ldsc.extract_gencorr:main"
+extract_h2 = "postgwas_tools.annot.ldsc.extract_h2:main"
+
+proces_results_ext = "postgwas_tools.mostest.proces_results_ext:main"
+proces_results = "postgwas_tools.mostest.proces_results:main"

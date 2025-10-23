@@ -8,58 +8,27 @@
 # Antoine Dufournet
 ##########################################################################
 
+from postgwas_tools.annot.utils import (
+    adjust_color_brightness,
+    read_sumstats,
+)
+
 import argparse
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
 import os
 
-def plot_manhattan(file_path):
+def plot_manhattan(file_path, endoftitle=None):
     base_colors = ['blue', 'red', 'green', 'purple', 'orange', 'brown', 'pink', 'gray', 'olive', 'cyan']
 
     plt.figure(figsize=(19.20,10.80))
 
     # Initialize chrom_offsets for alignment
     chrom_offsets = None
-
-    # Function to modify color brightness
-    def adjust_color_brightness(color, factor):
-        """Adjusts brightness of a color by blending with white (factor > 1) or black (factor < 1)."""
-        color = mcolors.to_rgb(color)  # Convert color to RGB
-        return tuple(min(1, max(0, c * factor)) for c in color)
-
     
     print(f"Working with file: {file_path}")
-    model = file_path.split('/')[-3]  
-    region = file_path.split('/')[-4] 
-    df = pd.read_csv(file_path, sep='\t')
-	
-    if file_path.endswith('glm.linear'):
-        df = df.rename(columns={"#CHROM":"CHR",
-                                "POS":"BP", 
-                                "ID":"rsID", 
-                                "REF":"A2", 
-                                "ALT":"ALT", 
-                                "A1":"A1", 
-                                "TEST":"TEST", 
-                                "OBS_CT":"OR", 
-                                "P":"PVAL"})
-        df = df.drop(["rsID","A2","ALT","A1","TEST","OR"], axis=1)
-
-    elif file_path.endswith('.txt'):
-        df = df.rename(columns={"POS":"BP",
-                                "SNP":"rsID",
-                                 "P":"PVAL"})
-
-    elif file_path.endswith('.mqfam.total'):
-        df = df.rename(columns={"SNP":"rsID", "P":"PVAL"})
-
-    elif file_path.endswith('.sumstats'):
-        if "Z_FAKE" in df.columns:
-            df = df.drop(["SNP","A1","A2","Z_FAKE","N"], axis=1)
-        elif "Z" in df.columns:
-            df = df.drop(["SNP","A1","A2","Z","N"], axis=1)
+    df = read_sumstats(file_path)
         
     dic_start_end_chr = {}
     chromosomes = sorted(df['CHR'].unique())
@@ -79,8 +48,8 @@ def plot_manhattan(file_path):
         dic_start_end_chr[chrom] = [df[df["CHR"]==chrom]["BP"].min(),df[df["CHR"]==chrom]["BP"].max()]
 
     # Filter significant SNPs
-    df = df[df["PVAL"] < 1e-2] #1e-3
-    df['neg_log10_pval'] = -np.log10(df['PVAL'])
+    df = df[df["P"] < 1e-2] #1e-3
+    df['neg_log10_pval'] = -np.log10(df['P'])
     df['x_val'] = df.apply(lambda row: row['BP'] + chrom_offsets.loc[row['CHR']], axis=1)
 
     # Loop through chromosomes to alternate colors
@@ -108,35 +77,44 @@ def plot_manhattan(file_path):
     plt.axhline(y=-np.log10(0.05/1e4), color='g', linestyle='--')
 
     # Customize plot labels and title
-    plt.xlabel('Chromosome')
-    plt.ylabel('-log10(p-value)')
-    plt.title(f'Manhattan Plot of the {region} region with model {model}')
+    plt.xlabel('Chromosome', fontsize=22)
+    plt.ylabel('-log10(p-value)', fontsize=22)
+    plt.title(f'Manhattan Plot {endoftitle}', fontsize=24)
 
     # Add chromosome labels at their midpoints
     chromosome_ticks = [chrom_offsets[chrom] + df[df['CHR'] == chrom]['BP'].max() / 2 for chrom in sorted(df['CHR'].unique())]
-    chromosome_labels = [f"Chr {chrom}" for chrom in sorted(df['CHR'].unique())]
-    plt.xticks(chromosome_ticks, chromosome_labels, rotation=45)
-    # Set up the x-axis limits
+    chromosome_labels = [f"{chrom}" for chrom in sorted(df['CHR'].unique())]
+    plt.xticks(chromosome_ticks, chromosome_labels, fontsize=16) #rotation=45,
+    plt.yticks(fontsize=16)
     plt.xlim([dic_start_end_chr[1][0] + chrom_offsets[1] - 13_000_000, dic_start_end_chr[22][1] + chrom_offsets[22]+ 13_000_000])
-    # Add legend
+    plt.ylim(bottom=0)
     #plt.legend(loc='upper right')
     plt.tight_layout()
     
     output_path = f'{os.path.dirname(file_path)}/manhattan_plot.png'
-    plt.savefig(output_path, format='png')
+    plt.savefig(output_path, format='png', transparent=True)
     print(f"Plot saved to: {output_path}")
-    #plt.show()
+    plt.show()
 
 def main():
-    # Set up argument parsing
+
     parser = argparse.ArgumentParser(description="Generate Manhattan plot for a given summary statistic file.")
     parser.add_argument('-p', '--path', type=str, 
                         help="File path to the summary statistic file.")
+    parser.add_argument('-t', '--endoftitle', type=str, default=None,
+                        help="End of the title you want to plot.")
+    
     args = parser.parse_args()
     file_path = args.path
+    endoftitle = args.endoftitle
+
+    if not endoftitle:
+        model = file_path.split('/')[-3]  
+        region = file_path.split('/')[-4] 
+        endoftitle = f"of the {region} region with model {model}"
 
     # Call the plotting function with the found file paths
-    plot_manhattan(file_path)
+    plot_manhattan(file_path, endoftitle)
 
 if __name__ == "__main__":
     main()

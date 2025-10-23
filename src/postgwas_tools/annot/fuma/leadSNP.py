@@ -30,7 +30,6 @@ import subprocess
 import sys
 import pandas as pd
 import gc
-from collections import defaultdict
 
 def parse_args():
     p = argparse.ArgumentParser(description="Run PLINK clumping and produce a FUMA-like leadSNPs table.")
@@ -57,7 +56,7 @@ def read_sumstats(path):
     try:
         df = pd.read_csv(path, sep="\t")
     except Exception:
-        df = pd.read_csv(path, sep="\s+")
+        df = pd.read_csv(path, sep="\s+", engine='python')
     return df
 
 def write_good_format(df, mapping, outpath, p2_threshold):
@@ -121,7 +120,7 @@ def read_clumped(path):
         print(f"Warning: clumped file {path} not found; returning empty DataFrame")
         return pd.DataFrame()
     try:
-        df = pd.read_csv(path, sep="\s+", comment="#")
+        df = pd.read_csv(path, sep="\s+", comment="#", engine='python')
     except Exception:
         print("Issue when reading plink output")
     return df
