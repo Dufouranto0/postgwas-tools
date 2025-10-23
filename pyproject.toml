@@ -8,7 +8,7 @@
 ##########################################################################
 
 [project]
-name = "GWAS_annotation"
+name = "postgwas-tools"
 version = "0.0.1"
 authors = [
   { name="Antoine Dufournet", email="antoine.dufournet@cea.fr" },
