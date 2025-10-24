@@ -23,26 +23,11 @@ pcocc-rs run --env UKB_HOME n4h00001rs:quant-genetics-0.3 \
 ##########################################################################
 
 import os
-import glob
 import argparse
 import pandas as pd
+from postgwas_tools.annot.utils import find_files
 
-def find_files(paths, file_name='scz_dim1.log'):
-    """Find all files matching the pattern 'file_name' under the given base paths."""
-    all_files = []
-    for path in paths:
-        if path.endswith(file_name):
-            # If the path directly points to a file
-            matched_files = glob.glob(path)
-        else:
-            # If the path is a directory or contains wildcards, search for matching files
-            search_pattern = f"{path.rstrip('/')}/**/*{file_name}"
-            matched_files = glob.glob(search_pattern, recursive=True)
-        
-        all_files.extend(matched_files)
-    return all_files
-
-def _get_gencorr(path, file_name='scz_dim1.log'):
+def _get_gencorr(path, base_name='scz_dim1.log'):
     print("Working with file:", path)
     gencov_target = "Total Observed scale gencov:"
     gencov = None
@@ -54,9 +39,7 @@ def _get_gencorr(path, file_name='scz_dim1.log'):
     P_target = "P:"
     P = None
     region_name = path.split("/")[9]
-    model_name = path.split("/")[10]
-    dim = file_name.replace("scz_", "")
-    dim = dim.replace(".log", "")
+    dim = base_name.replace(".log", "")
     with open(path, "rt") as of:
         lines = of.readlines()
     for line in lines:
@@ -86,30 +69,24 @@ def _get_gencorr(path, file_name='scz_dim1.log'):
     return region_name,dim,gencov,gencorr,se,zscore,P
 
 def main():
-    # Set up argument parsing
     parser = argparse.ArgumentParser(description="Extract gencorr estimation from ldsc logs.")
     parser.add_argument('-p', '--paths', nargs='+', type=str, 
-                        help="List of base folder paths or file paths to ldsc logs files.")
-    parser.add_argument('-f', '--filename', type=str, default='scz_dim1.log', 
-                        help="Name of ldsc log files.")
+                        help="List of ldsc logs paths.")
     parser.add_argument('-o', '--out', type=str, default="./", 
                         help="Directory of the output")
     args = parser.parse_args()
 
     # Find all relevant files
-    file_name = args.filename
-    file_paths = find_files(args.paths, file_name)
+    file_paths = find_files(args.paths)
     out = args.out
     out = os.path.dirname(out)
-
-    if not file_paths:
-        print(f"No files found matching the pattern '{file_name}'. Please check your paths.")
-        return
 
     # Call the plotting function with the found file paths
     gencorr_dic = {"pheno":[], "dim":[], "gencov":[], "gencorr":[],"se":[], "zscore":[], "P":[]}
     for file_path in file_paths:
-        pheno,dim,gencov,gencorr,se,zscore,P = _get_gencorr(file_path, file_name)
+        print(f"Working with file: {file_path}")
+        base_name = os.path.basename(file_path)
+        pheno,dim,gencov,gencorr,se,zscore,P = _get_gencorr(file_path, base_name)
         gencorr_dic["pheno"].append(pheno)
         gencorr_dic["dim"].append(dim)
         gencorr_dic["gencov"].append(gencov)
