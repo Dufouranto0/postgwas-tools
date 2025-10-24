@@ -11,6 +11,8 @@ It simplifies steps such as plotting, SNP annotation, and result parsing for lar
 ```bash
 git clone https://github.com/Dufouranto0/postgwas-tools.git
 cd postgwas-tools
+python3 -m venv venv
+. venv/bin/activate
 pip install -e .
 ```
 
