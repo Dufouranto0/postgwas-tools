@@ -30,16 +30,13 @@ import subprocess
 import sys
 import pandas as pd
 import gc
+from postgwas_tools.annot.utils import read_sumstats
 
 def parse_args():
     p = argparse.ArgumentParser(description="Run PLINK clumping and produce a FUMA-like leadSNPs table.")
     p.add_argument("--sumstats", required=True, help="GWAS summary stats file (tab/space-delimited, may have header).")
-    p.add_argument("--col-snp", default="SNP", help="Column name for SNP id in sumstats (default: SNP)")
-    p.add_argument("--col-chr", default="CHR", help="Column name for chromosome (default: CHR)")
-    p.add_argument("--col-bp", default="BP", help="Column name for base pair position (default: BP)")
     p.add_argument("--col-a1", default="A1", help="Column name for effect allele / A1 (default: A1)")
     p.add_argument("--col-a2", default="A2", help="Column name for other allele / A2 (default: A2)")
-    p.add_argument("--col-p", default="P", help="Column name for p-value (default: P)")
     p.add_argument("--bfile", required=True, help="PLINK --bfile prefix (path to .bed/.bim/.fam without extension)")
     p.add_argument("--plink", default="plink", help="PLINK binary to call (default 'plink')")
     p.add_argument("--r2-loci", type=float, default=0.1, help="r2 for loci clumping (default: 0.1)")
@@ -51,13 +48,6 @@ def parse_args():
     p.add_argument("--out", default="results", help="Output directory (default 'results')")
     p.add_argument("--keep-intermediate", action="store_true", help="Keep intermediate reformatted sumstats file")
     return p.parse_args()
-
-def read_sumstats(path):
-    try:
-        df = pd.read_csv(path, sep="\t")
-    except Exception:
-        df = pd.read_csv(path, sep="\s+", engine='python')
-    return df
 
 def write_good_format(df, mapping, outpath, p2_threshold):
     # ensure columns exist
@@ -358,13 +348,14 @@ def main():
     os.makedirs(args.out, exist_ok=True)
 
     df = read_sumstats(args.sumstats)
+    print(df.columns())
     mapping = {
-        "snp": args.col_snp,
-        "chr": args.col_chr,
-        "bp": args.col_bp,
+        "snp": "SNP",
+        "chr": "CHR",
+        "bp": "BP",
         "a1": args.col_a1,
         "a2": args.col_a2,
-        "p": args.col_p
+        "p": "P"
     }
     okstats_path = os.path.join(args.out, "good_format_gwas.txt")
     # prefilter by clump_p2 to reduce file size/time/memory
