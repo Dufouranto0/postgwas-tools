@@ -64,7 +64,7 @@ def read_sumstats(file_path):
     plain text and gzipped (.gz) files. Maps columns:
       - 'chr', '#chr', '#chrom', 'chrom', 'chromosome' -> 'CHR'
       - 'bp', 'pos' -> 'BP'
-      - 'id', 'snp', 'markername', 'rs', 'rs_number', 'snpid', 'rsid' -> 'SNP'
+      - 'snp', 'id', 'markername', 'rs', 'rs_number', 'snpid', 'rsid' -> 'SNP'
       - 'p', 'pvalue', 'p_value', 'pval', 'p_val', 'gc_pvalue' -> 'P'
 
     Parameters
