@@ -41,15 +41,22 @@ src/postgwas_tools/
 You can generate a multi-model Manhattan plot directly from the command line:
 
 ```bash
-manhattan_plot -p /path/to/gwas1.sumstats /path/to/gwas2.sumstats -t manhattan -o ./results
+manhattan_plot -p /path/to/gwas1.sumstats /path/to/gwas2.sumstats \
+               -t manhattan \
+               -o ./results
 ```
 
 Or using a file pattern:
 ```bash
-manhattan_plot -p "/neurospin/dico/adufournet/2025_FUMA/data/*.sumstats"
+manhattan_plot -p "/path/to/*.sumstats"
 ```
 
 This will create a high-resolution `manhattan_plot.png` in the output directory.
+
+If you just want a light manhattan plot, you can do:
+```bash
+light_manhattan_plot -p /path/to/gwas_input.txt
+```
 
 ---
 

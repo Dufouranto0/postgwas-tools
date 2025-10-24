@@ -62,16 +62,6 @@ extract_h2 -i /data/ldsc/heritability.log -o ./results
 
 ---
 
-## Visualization Examples
-
-| Plot Type | Example |
-|------------|----------|
-| Manhattan  | ![Manhattan Example](docs/images/manhattan_example.png) |
-| QQ Plot    | ![QQ Example](docs/images/qq_example.png) |
-| Loci Plot  | ![Locus Example](docs/images/loci_example.png) |
-
----
-
 ## Notes
 
 - All plots are saved as `.png` files with **transparent backgrounds** for easy embedding.  
