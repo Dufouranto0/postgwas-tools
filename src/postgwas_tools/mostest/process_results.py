@@ -6,7 +6,7 @@ import scipy.stats as stats
 import h5py
 import sys
 
-if __name__ == '__main__':
+def main():
     if len(sys.argv) <= 2:
         print('Usage: process_results.py <bim> <fname> [<out>], where')
         print(' bim   - path to bim file (reference set of SNPs')
@@ -57,3 +57,6 @@ if __name__ == '__main__':
         bim.to_csv('{}.{}.sumstats'.format(out, test.replace('_log10pval', '')), sep='\t', na_rep="NA", index=False)
 
     print('Done.')
+
+if __name__ == '__main__':
+    main()

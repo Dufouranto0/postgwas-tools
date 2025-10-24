@@ -65,7 +65,7 @@ def correlation_heatmap(z_score, path_to_save, name):
     
     return correlation_matrix
 
-if __name__ == '__main__':
+def main():
     if len(sys.argv) <= 2:
         print('Usage: process_results_ext.py <bim> <fname> [<out>], where')
         print(' bim   - path to bim file (reference set of SNPs')
@@ -161,3 +161,7 @@ if __name__ == '__main__':
             del se_orig
             del pval_orig
         del zmat_orig
+
+
+if __name__ == '__main__':
+    main()
