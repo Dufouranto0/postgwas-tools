@@ -69,7 +69,7 @@ def plot_manhattan(file_path, endoftitle=None, output_folder=None):
         end = df[df["CHR"]==chrom]["BP"].max() + chrom_offsets[chrom] + 1_000_000
         mid = (start + end) / 2
         width = end - start + 6_000_000
-        # Height for the bar below -log10(p)=3
+        # Height for the bar below -log10(p)=2
         plt.bar(mid, 2, width=width, color=adjusted_color, align='center')
 
     # Add a horizontal significance threshold line
