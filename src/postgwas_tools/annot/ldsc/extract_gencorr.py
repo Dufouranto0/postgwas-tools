@@ -14,10 +14,8 @@ Example of usage:
 ROOTDIR=/ccc/workflash/cont003/n4h00001/n4h00001
 RESULTSDIR=25irene_AD_allRegionMOSTEST/results/Champollion_V1_32/*/*/32PCs/white.British.ancestry
 
-pcocc-rs run --env UKB_HOME n4h00001rs:quant-genetics-0.3 \
-     python3 $ROOTDIR/LDSC/extract_gencorr.py --\
-            -p $ROOTDIR/$RESULTSDIR/SCZ_corr/ \
-            -f scz_dim1.log \
+     python3 $ROOTDIR/LDSC/extract_gencorr.py \
+            -p $ROOTDIR/$RESULTSDIR/SCZ_corr/scz_dim1.log \
             -o $ROOTDIR/25irene_AD_allRegionMOSTEST/results/Champollion_V1_32/SCZ_corr/.
 """
 ##########################################################################
@@ -27,8 +25,7 @@ import argparse
 import pandas as pd
 from postgwas_tools.annot.utils import find_files
 
-def _get_gencorr(path, base_name='scz_dim1.log'):
-    print("Working with file:", path)
+def _get_gencorr(path):
     gencov_target = "Total Observed scale gencov:"
     gencov = None
     gencorr_target = "Genetic Correlation:"
@@ -38,8 +35,6 @@ def _get_gencorr(path, base_name='scz_dim1.log'):
     zscore = None
     P_target = "P:"
     P = None
-    region_name = path.split("/")[9]
-    dim = base_name.replace(".log", "")
     with open(path, "rt") as of:
         lines = of.readlines()
     for line in lines:
@@ -66,7 +61,7 @@ def _get_gencorr(path, base_name='scz_dim1.log'):
             except ValueError:
                 print(f"Warning: Could not extract P from {path}")
             break
-    return region_name,dim,gencov,gencorr,se,zscore,P
+    return gencov,gencorr,se,zscore,P
 
 def main():
     parser = argparse.ArgumentParser(description="Extract gencorr estimation from ldsc logs.")
@@ -86,7 +81,9 @@ def main():
     for file_path in file_paths:
         print(f"Working with file: {file_path}")
         base_name = os.path.basename(file_path)
-        pheno,dim,gencov,gencorr,se,zscore,P = _get_gencorr(file_path, base_name)
+        pheno = file_path.split("/")[-6]
+        dim = base_name.replace(".log", "")
+        gencov,gencorr,se,zscore,P = _get_gencorr(file_path)
         gencorr_dic["pheno"].append(pheno)
         gencorr_dic["dim"].append(dim)
         gencorr_dic["gencov"].append(gencov)
