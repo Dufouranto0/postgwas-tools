@@ -86,7 +86,7 @@ def plot_manhattan(file_paths, plot_type, output_folder):
 
     # Customize plot labels and title
     plt.xlabel('Chromosome', fontsize=22)
-    plt.ylabel('-log10(p-value)', fontsize=22)
+    plt.ylabel(r"$-log_{10}{(p-value)}$", fontsize=22)
     plt.title('Manhattan Plot', fontsize=24)
 
     # Add chromosome labels at their midpoints
@@ -120,7 +120,7 @@ def main():
         help="Type of plot to generate: 'manhattan' (default) or 'miami'"
     )
     parser.add_argument(
-        '-o', '--outputfolder', type=str, default='.',
+        '-o', '--out', type=str, default='.',
         help="Output folder for saving the plot."
     )
     args = parser.parse_args()
@@ -128,7 +128,7 @@ def main():
     # Find files matching any path or pattern
     file_paths = find_files(args.paths)
     plot_type = args.plottype
-    output_folder = args.outputfolder
+    output_folder = args.out
 
     if not file_paths:
         print("No files found. Please check your paths or patterns.")

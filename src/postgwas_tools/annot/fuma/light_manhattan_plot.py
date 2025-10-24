@@ -19,7 +19,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
-def plot_manhattan(file_path, endoftitle=None):
+def plot_manhattan(file_path, endoftitle=None, output_folder=None):
     base_colors = ['blue', 'red', 'green', 'purple', 'orange', 'brown', 'pink', 'gray', 'olive', 'cyan']
 
     plt.figure(figsize=(19.20,10.80))
@@ -78,7 +78,7 @@ def plot_manhattan(file_path, endoftitle=None):
 
     # Customize plot labels and title
     plt.xlabel('Chromosome', fontsize=22)
-    plt.ylabel('-log10(p-value)', fontsize=22)
+    plt.ylabel(r"$-log_{10}{(p-value)}$", fontsize=22)
     plt.title(f'Manhattan Plot {endoftitle}', fontsize=24)
 
     # Add chromosome labels at their midpoints
@@ -91,10 +91,14 @@ def plot_manhattan(file_path, endoftitle=None):
     #plt.legend(loc='upper right')
     plt.tight_layout()
     
-    output_path = f'{os.path.dirname(file_path)}/manhattan_plot.png'
+    if not output_folder:
+        output_path = f'{os.path.dirname(file_path)}/manhattan_plot.png'
+    else:
+        output_path = f'{output_folder}/manhattan_plot.png'
+
     plt.savefig(output_path, format='png', transparent=True)
     print(f"Plot saved to: {output_path}")
-    plt.show()
+    #plt.show()
 
 def main():
 
@@ -103,10 +107,13 @@ def main():
                         help="File path to the summary statistic file.")
     parser.add_argument('-t', '--endoftitle', type=str, default=None,
                         help="End of the title you want to plot.")
+    parser.add_argument('-o', '--out', type=str, default=None,
+                        help="Output folder for saving the plot.")
     
     args = parser.parse_args()
     file_path = args.path
     endoftitle = args.endoftitle
+    output_folder= args.out
 
     if not endoftitle:
         model = file_path.split('/')[-3]  
@@ -114,7 +121,7 @@ def main():
         endoftitle = f"of the {region} region with model {model}"
 
     # Call the plotting function with the found file paths
-    plot_manhattan(file_path, endoftitle)
+    plot_manhattan(file_path, endoftitle, output_folder)
 
 if __name__ == "__main__":
     main()
