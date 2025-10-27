@@ -9,12 +9,16 @@ This document provides hands-on examples of how to use the tools included in the
 Generate a combined Manhattan plot for multiple GWAS result files:
 
 ```bash
-manhattan_plot -p /data/gwas1.sumstats /data/gwas2.sumstats /data/gwas3.sumstats -t manhattan -o ./results
+manhattan_plot -p /data/gwas1.sumstats /data/gwas2.sumstats /data/gwas3.sumstats \
+               -t manhattan \
+               -o ./results
 ```
 
 or using a wildcard:
 ```bash
-manhattan_plot -p "/data/*.sumstats" -t manhattan -o ./results
+manhattan_plot -p "/data/*.sumstats" \
+               -t manhattan \
+               -o ./results
 ```
 
 **Example output:**
@@ -25,20 +29,26 @@ manhattan_plot -p "/data/*.sumstats" -t manhattan -o ./results
 
 ## QQ Plot
 
-Compare GWAS inflation visually:
+GWAS inflation
+Inspired from (https://github.com/ShujiaHuang/qmplot):
 
 ```bash
-QQ_plot -p /data/gwas1.sumstats /data/gwas2.sumstats -o ./results
+QQ_plot -p /data/gwas1.sumstats \
+        -o ./results
 ```
 
 ![QQ Example](docs/images/qq_example.png)
 
 ---
 
-## Identify Lead SNPs
+## Identify Lead SNPs (FUMA like, with PLINK1.9)
 
 ```bash
-leadSNP -p /data/gwas_results.sumstats -o ./results
+leadSNP --sumstats V1_32_SCsylv_l.sumstats \
+        --col-a1 A1 --col-a2 A2 \
+        --bfile filt_imputed_autosomes_maf-0.01 \
+        --plink $PLINK \
+        --out tests/V1_32_SCsylv_l
 ```
 
 This command will extract independent lead SNPs using FUMA-like logic.
@@ -73,6 +83,3 @@ extract_h2 -i /data/ldsc/heritability.log -o ./results
 ## Back to Overview
 
 Return to the main [README.md](README.md).
-````
-
----
