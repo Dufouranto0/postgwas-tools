@@ -86,7 +86,7 @@ def plot_manhattan(file_paths, plot_type, output_folder):
 
     # Customize plot labels and title
     plt.xlabel('Chromosome', fontsize=22)
-    plt.ylabel(r"$-log_{10}{(p-value)}$", fontsize=22)
+    plt.ylabel(r"$-log_{10}{(p)}$", fontsize=22)
     plt.title('Manhattan Plot', fontsize=24)
 
     # Add chromosome labels at their midpoints

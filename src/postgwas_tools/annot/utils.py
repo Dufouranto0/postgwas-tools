@@ -56,7 +56,7 @@ def adjust_color_brightness(color, factor):
     return tuple(min(1, max(0, c * factor)) for c in color)
 
 
-def read_sumstats(file_path):
+def read_sumstats(file_path, A1=None, A2=None):
     """
     Read a GWAS summary statistics file and standardize column names.
 
@@ -111,16 +111,26 @@ def read_sumstats(file_path):
             col_map[col] = 'SNP'
         elif col in ['p', 'pvalue', 'p_value', 'pval', 'p_val', 'gc_pvalue']:
             col_map[col] = 'P'
+    if A1 and A1.strip().lower() in df.columns:
+        col_map[A1.strip().lower()] = 'A1'
+    if A2 and A2.strip().lower() in df.columns:
+        col_map[A2.strip().lower()] = 'A2'
 
     df = df.rename(columns=col_map)
 
     # --- Validation ---
-    missing = [c for c in ['CHR', 'BP', 'SNP', 'P'] if c not in df.columns]
+    list_to_keep = ['CHR', 'BP', 'SNP', 'P']
+    if A1:
+        list_to_keep+=['A1']
+    if A2:
+        list_to_keep+=['A2']
+
+    missing = [c for c in list_to_keep if c not in df.columns]
     if missing:
         raise ValueError(f"Missing required columns {missing} in {file_path}")
 
     # --- Keep only the main columns ---
-    keep_cols = [c for c in ['CHR', 'BP', 'SNP', 'P'] if c in df.columns]
+    keep_cols = [c for c in list_to_keep if c in df.columns]
     df = df[keep_cols]
 
     return df

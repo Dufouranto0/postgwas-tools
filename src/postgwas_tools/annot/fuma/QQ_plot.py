@@ -41,8 +41,8 @@ def main():
     qqplot(data=df["P"],
            marker="o",
            title=f"QQ plot for {region} {model}",
-           xlabel=r"Expected $-log_{10}{(p-value)}$",
-           ylabel=r"Observed $-log_{10}{(p-value)}$",
+           xlabel=r"Expected $-log_{10}{(p)}$",
+           ylabel=r"Observed $-log_{10}{(p)}$",
            ax=ax)
 
     if not output_folder:
