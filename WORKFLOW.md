@@ -61,6 +61,7 @@ The output is stored temporarily in `FUMA/clump_lead`.
 ### Step 3 – Merge clumps
 
 Finally, clumps whose lead SNPs are located within **250 kb** of each other are merged into **genomic loci**.
+
 ---
 
 ## Fast Manhattan Plot
