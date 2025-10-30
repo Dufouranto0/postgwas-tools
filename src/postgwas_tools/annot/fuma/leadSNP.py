@@ -508,13 +508,13 @@ def main():
         pass
 
     # Run PLINK clumping for loci (r2_loci) and independents (r2_ind)
-    clump_loci_prefix = os.path.join(outdir, "clump_loci")
+    clump_lead_prefix = os.path.join(outdir, "clump_lead")
     clump_ind_prefix = os.path.join(outdir, "clump_ind")
 
     clumped_loci_path = run_plink_clump(args.plink,
                                         args.bfile,
                                         okstats_path,
-                                        clump_loci_prefix,
+                                        clump_lead_prefix,
                                         args.clump_p1,
                                         args.clump_p2,
                                         args.r2_loci,
@@ -570,9 +570,9 @@ def main():
         intermediate_files = [
             okstats_path,
             os.path.join(outdir, "clump_ind.clumped"),
-            os.path.join(outdir, "clump_loci.clumped"),
+            os.path.join(outdir, "clump_lead.clumped"),
             os.path.join(outdir, "clump_ind.log"),
-            os.path.join(outdir, "clump_loci.log"),
+            os.path.join(outdir, "clump_lead.log"),
         ]
 
         for f in intermediate_files:
