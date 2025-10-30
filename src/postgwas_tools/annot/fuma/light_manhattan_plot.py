@@ -92,8 +92,8 @@ def plot_manhattan(file_path, title=None, output_folder=None, lead_snps_path=Non
                 continue
             x = row['BP'] + chrom_offsets.loc[chrom]
             snp = row['SNP']
-            plt.scatter(x, -np.log10(row['p']), color='red', s=20, zorder=5)
-            plt.text(x, -np.log10(row['p']) + 0.3, snp, fontsize=10, rotation=45,
+            plt.scatter(x, -np.log10(row['p']), color='red', s=15, zorder=5)
+            plt.text(x, -np.log10(row['p']) + 0.08, snp, fontsize=10, rotation=45,
                     ha='left', va='bottom', color='black')
 
     # Add a horizontal significance threshold line
@@ -130,7 +130,7 @@ def main():
     parser.add_argument('-p', '--path', type=str, 
                         help="File path to the summary statistic file.")
     parser.add_argument('-t', '--title', type=str, default=None,
-                        help="End of the title you want to plot.")
+                        help="Title you want to plot.")
     parser.add_argument('--lead-snps', type=str, default=None,
                     help="Path to lead SNPs file to label on the Manhattan plot.")
     parser.add_argument('-o', '--out', type=str, default=None,

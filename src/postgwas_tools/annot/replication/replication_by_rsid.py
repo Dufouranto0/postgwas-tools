@@ -12,9 +12,9 @@ replication_by_rsid_with_fallback_and_log_v2.py
 
 Usage:
     python replication_by_rsid_with_fallback_and_log_v2.py \
-        --lead path/to/leadSNPs.txt \
-        --sumstats_hg38 path/to/ABCD_sumstats_hg38.txt \
-        --rep_out path/to/replication_matches.txt
+        --lead-snps path/to/leadSNPs.txt \
+        --sumstats path/to/ABCD_sumstats.txt \
+        --out path/to/replication_matches.txt
 
 Description:
     For each lead SNP (from FUMA), find its corresponding line in replication
@@ -47,7 +47,7 @@ def read_lead_rsids(path):
 
         indsig_col = None
         for i, h in enumerate(header):
-            if h.lower() in ('indsigsnps', 'independent_snps', 'independent_snp', 'proxy_snps'):
+            if h == 'nIndSigSNPs':
                 indsig_col = i
                 break
 
@@ -163,14 +163,14 @@ def match_by_lead(lead_to_all, rep_dict, header, out_path):
 
 def main():
     parser = argparse.ArgumentParser(description="Match lead SNPs by rsID, with fallback and logging (1 match per lead).")
-    parser.add_argument("--lead", required=True, help="Lead SNPs file (FUMA format with rsID and IndSigSNPs columns).")
-    parser.add_argument("--sumstats_hg38", required=True, help="Replication summary stats (hg38). Can be .gz.")
-    parser.add_argument("--rep_out", required=True, help="Output file for matched replication SNPs.")
+    parser.add_argument("--lead-snps", required=True, help="Lead SNPs file (FUMA format with rsID and IndSigSNPs columns).")
+    parser.add_argument("--sumstats", required=True, help="Replication summary stats (can be hg37 or hg38). Can be .gz.")
+    parser.add_argument("--out", required=True, help="Output file for matched replication SNPs.")
     args = parser.parse_args()
 
-    lead_to_all = read_lead_rsids(args.lead)
-    rep_dict, header = index_replication_file(args.sumstats_hg38)
-    match_by_lead(lead_to_all, rep_dict, header, args.rep_out)
+    lead_to_all = read_lead_rsids(args.lead_snps)
+    rep_dict, header = index_replication_file(args.sumstats)
+    match_by_lead(lead_to_all, rep_dict, header, args.out)
 
 
 if __name__ == "__main__":

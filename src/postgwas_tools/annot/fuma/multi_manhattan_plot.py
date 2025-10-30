@@ -95,7 +95,8 @@ def plot_manhattan(file_paths, plot_type, output_folder):
     plt.xticks(chromosome_ticks, chromosome_labels, fontsize=16) #rotation=45
     plt.yticks(fontsize=16)
     plt.xlim([dic_start_end_chr[1][0] + chrom_offsets[1] - 13_000_000, dic_start_end_chr[22][1] + chrom_offsets[22]+ 13_000_000])
-    plt.ylim(bottom=0)
+    if plot_type == 'manhattan':
+        plt.ylim(bottom=0)
     #plt.legend(loc='upper right',
     #           fontsize=16,
     #           frameon=False     )

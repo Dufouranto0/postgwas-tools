@@ -30,9 +30,6 @@ def main():
 
     print(f"Working with file: {file_path}")
 
-    model = file_path.split('/')[-3]  
-    region = file_path.split('/')[-4]
-
     df = read_sumstats(file_path)
     df = df.dropna(how="any", axis=0)  # clean data
 
@@ -40,7 +37,7 @@ def main():
     f, ax = plt.subplots(figsize=(6, 6), facecolor="w", edgecolor="k")
     qqplot(data=df["P"],
            marker="o",
-           title=f"QQ plot for {region} {model}",
+           title=f"QQ plot",
            xlabel=r"Expected $-log_{10}{(p)}$",
            ylabel=r"Observed $-log_{10}{(p)}$",
            ax=ax)
