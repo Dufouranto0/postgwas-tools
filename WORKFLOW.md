@@ -121,7 +121,7 @@ QQ_plot -p /data/gwas.sumstats \
         -o results
 ```
 
-![QQ Example](docs/images/QQplot.png)
+<img src="docs/images/QQplot.png" alt="QQ Example" width="400">
 
 ---
 
