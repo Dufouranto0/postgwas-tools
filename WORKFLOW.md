@@ -34,10 +34,10 @@ plink --bfile filt_imputed_autosomes_maf-0.01 \
 This command uses the binary genotype files (`.bed`, `.bim`, `.fam`) from `--bfile` filt_imputed_autosomes_maf-0.01 to calculate linkage disequilibrium (LD) within the sample.
 It then **clumps** SNPs from the summary statistics file (`--clump`) as follows:
 
-*Only SNPs with **p-values < 5e-8** (`--clump-p1`) are considered significant.
-*SNPs with **p-values < 5e-6** (`--clump-p2`) can be included in clumps.
-*SNPs are grouped if **r² ≥ 0.6** (`--clump-r2`), and clumps span at most **1 Mb** (`--clump-kb` 1000).
-*Results are stored temporarily in `FUMA/clump_ind`.
+* Only SNPs with **p-values < 5e-8** (`--clump-p1`) are considered significant.
+* SNPs with **p-values < 5e-6** (`--clump-p2`) can be included in clumps.
+* SNPs are grouped if **r² ≥ 0.6** (`--clump-r2`), and clumps span at most **1 Mb** (`--clump-kb` 1000).
+* Results are stored temporarily in `FUMA/clump_ind`.
 
 
 Note: FUMA limits clump size by the number of SNPs rather than physical distance;
@@ -55,9 +55,11 @@ plink --bfile filt_imputed_autosomes_maf-0.01 \
 ```
 
 This second clumping step repeats the previous logic, except that **r² = 0.1** is used to identify **lead SNPs**.
+
 The output is stored temporarily in `FUMA/clump_lead`.
 
 ### Step 3 – Merge clumps
+
 Finally, clumps whose lead SNPs are located within **250 kb** of each other are merged into **genomic loci**.
 ---
 
