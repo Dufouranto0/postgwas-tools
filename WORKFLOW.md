@@ -47,7 +47,7 @@ process_results_ext \
 
 **Example output:**
 
-![Correlation matrix Example](Corr_matrix_Large_CINGULATE_left.png)
+![Correlation matrix Example](docs/images/Corr_matrix_Large_CINGULATE_left.png)
 
 See https://github.com/precimed/mostest?tab=readme-ov-file for more details.
 
