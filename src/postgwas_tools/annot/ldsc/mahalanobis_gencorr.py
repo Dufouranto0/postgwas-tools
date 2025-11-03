@@ -58,6 +58,7 @@ def main():
     parser.add_argument("--prefix", required=True, help="Common prefix for LDSC files (e.g., 'scz_')")
     parser.add_argument("--multphen", required=True, help="CSV file with phenotype values")
     parser.add_argument("--out", required=False, help="Output folder to write the results", default=None)
+    parser.add_argument("--phenoname", required=False, help="Name of the global phenotype", default=None)
     args = parser.parse_args()
 
     out = args.out 
@@ -71,7 +72,6 @@ def main():
 
     print("Computing phenotype correlation...")
     corr_matrix = compute_correlation(args.multphen, pheno_names)
-
     print("Performing Mahalanobis test...")
     chi2_val, df, p_val = mahalanobis_chi2(z_scores, corr_matrix)
 
@@ -81,6 +81,7 @@ def main():
     print(f"P-value = {p_val:.4g}")
 
     results = {
+        "pheno": args.phenoname, 
         "chi2_statistic": chi2_val,
         "degrees_of_freedom": df,
         "p_value": p_val,

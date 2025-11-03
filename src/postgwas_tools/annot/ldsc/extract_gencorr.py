@@ -15,7 +15,7 @@ ROOTDIR=/ccc/workflash/cont003/n4h00001/n4h00001
 RESULTSDIR=25irene_AD_allRegionMOSTEST/results/Champollion_V1_32/*/*/32PCs/white.British.ancestry
 
      python3 $ROOTDIR/LDSC/extract_gencorr.py \
-            -p $ROOTDIR/$RESULTSDIR/SCZ_corr/scz_dim1.log \
+            -p $ROOTDIR/$RESULTSDIR/SCZ_corr/scz_pheno1.log \
             -o $ROOTDIR/25irene_AD_allRegionMOSTEST/results/Champollion_V1_32/SCZ_corr/.
 """
 ##########################################################################
@@ -69,6 +69,7 @@ def main():
                         help="List of ldsc logs paths.")
     parser.add_argument('-o', '--out', type=str, default="./", 
                         help="Directory of the output")
+    parser.add_argument("--prefix", help="Common prefix for LDSC files (e.g., 'scz_')")
     args = parser.parse_args()
 
     # Find all relevant files
@@ -77,23 +78,23 @@ def main():
     out = os.path.dirname(out)
 
     # Call the plotting function with the found file paths
-    gencorr_dic = {"pheno":[], "dim":[], "gencov":[], "gencorr":[],"se":[], "zscore":[], "P":[]}
+    gencorr_dic = {"pheno":[], "gencov":[], "gencorr":[],"se":[], "zscore":[], "P":[]}
     for file_path in file_paths:
         print(f"Working with file: {file_path}")
         base_name = os.path.basename(file_path)
-        pheno = file_path.split("/")[-6]
-        dim = base_name.replace(".log", "")
+        pheno = base_name.replace(".log", "")
+        pheno = pheno.replace(parser.prefix, "")
         gencov,gencorr,se,zscore,P = _get_gencorr(file_path)
         gencorr_dic["pheno"].append(pheno)
-        gencorr_dic["dim"].append(dim)
         gencorr_dic["gencov"].append(gencov)
         gencorr_dic["gencorr"].append(gencorr)
         gencorr_dic["se"].append(se)
         gencorr_dic["zscore"].append(zscore)
         gencorr_dic["P"].append(P)
      
-    gencorr_dic = pd.DataFrame(gencorr_dic)
-    gencorr_dic.to_csv(f"{out}/gencorr_summary.tsv", sep='\t', index=False)
+    gencorr_df = pd.DataFrame(gencorr_dic)
+
+    gencorr_df.to_csv(f"{out}/gencorr_summary.tsv", sep='\t', index=False)
     print("Summary of gencorr saved at:","\n", f"{out}/gencorr_summary.tsv")
 
 if __name__ == "__main__":

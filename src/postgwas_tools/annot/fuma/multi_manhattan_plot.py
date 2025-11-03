@@ -116,7 +116,7 @@ def main():
         help="List of paths, file names, or wildcard patterns (e.g. /data/*.sumstats)"
     )
     parser.add_argument(
-        '-t', '--plottype', type=str, default='manhattan',
+        '-k', '--kind', type=str, default='manhattan',
         choices=['manhattan', 'miami'],
         help="Type of plot to generate: 'manhattan' (default) or 'miami'"
     )
@@ -128,7 +128,7 @@ def main():
 
     # Find files matching any path or pattern
     file_paths = find_files(args.paths)
-    plot_type = args.plottype
+    plot_type = args.kind
     output_folder = args.out
 
     if not file_paths:
