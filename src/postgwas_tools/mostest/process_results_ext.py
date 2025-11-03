@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.io as sio
 import scipy.stats as stats
+import argparse
 import h5py
 import sys
 import os
@@ -66,7 +67,30 @@ def correlation_heatmap(z_score, path_to_save, name):
     return correlation_matrix
 
 def main():
-    if len(sys.argv) <= 2:
+    parser = argparse.ArgumentParser(
+        description=(
+            "Extract mostest results.\n"
+            "Usage: process_results_ext.py --bim <bim> --fname <fname> --out <out> --uniGWAS\n"
+            "where:"
+        )
+    )
+    parser.add_argument("--bim", type=str,
+                        help="Path to .bim file (reference set of SNPs)", required=True)
+    parser.add_argument("--fname", type=str,
+                        help="Prefix of .mat files output by mostest.m", required=True)
+    parser.add_argument("--out", type=str,
+                        help="Optional suffix for output files (defaults to fname)",
+                        default=None)
+    parser.add_argument("--uniGWAS", action="store_true",
+                        help="Optional flag to save the univariate GWAS as well")
+
+    args = parser.parse_args()
+    bim_file = args.bim
+    fname = args.fname
+    out = args.out if args.out else fname
+    uniGWAS = args.uniGWAS
+
+    """if len(sys.argv) <= 2:
         print('Usage: process_results_ext.py <bim> <fname> [<out>], where')
         print(' bim   - path to bim file (reference set of SNPs')
         print(' fname - prefix of .mat files output by mostest.m, ie. fname should be the same as "out" argument of the mostest.m')
@@ -77,7 +101,7 @@ def main():
     bim_file = sys.argv[1] #'UKB26502_QCed_230519_maf0p005_chr21.bim'
     fname = sys.argv[2]    # 'all_chr21'
     out = sys.argv[3] if (len(sys.argv) > 3) else sys.argv[2]
-    uniGWAS = True
+    uniGWAS = sys.argv[4] if (len(sys.argv) > 4) else False"""
 
     # read .bim file (reference set of SNPs)
     print('Load {}...'.format(bim_file))
@@ -132,34 +156,35 @@ def main():
         del zmat_perm
 
         # save individual GWAS results ('freqvec' is an indicator that we've saved individual GWAS beta's)
-        if 'freqvec' in h5file:
-            bim['FRQ'] = np.transpose(np.array(h5file['freqvec']))
+        if uniGWAS:
+            if 'freqvec' in h5file:
+                bim['FRQ'] = np.transpose(np.array(h5file['freqvec']))
 
-            # Create the folder for the individual GWAS results 
-            folder_uni = "GWAS_uni"
-            os.makedirs(f"{os.path.dirname(out)}/{folder_uni}", exist_ok=True)
-            print(f"Folder '{folder_uni}' created successfully.")
+                # Create the folder for the individual GWAS results 
+                folder_uni = "GWAS_uni"
+                os.makedirs(f"{os.path.dirname(out)}/{folder_uni}", exist_ok=True)
+                print(f"Folder '{folder_uni}' created successfully.")
 
-            beta_orig = np.array(h5file['beta_orig'])
-            # division by 0 occured when zmat_orig was to close to 0
-            # therefore the default value for the standard error will
-            # be set as 999
-            se_orig = 999*np.ones(shape=beta_orig.shape, dtype=float)
-            se_orig = np.divide(beta_orig, zmat_orig, out=se_orig, where=(np.abs(zmat_orig)>0.01))
-            pval_orig = stats.norm.sf(np.abs(zmat_orig)) * 2.0
+                beta_orig = np.array(h5file['beta_orig'])
+                # division by 0 occured when zmat_orig was to close to 0
+                # therefore the default value for the standard error will
+                # be set as 999
+                se_orig = 999*np.ones(shape=beta_orig.shape, dtype=float)
+                se_orig = np.divide(beta_orig, zmat_orig, out=se_orig, where=(np.abs(zmat_orig)>0.01))
+                pval_orig = stats.norm.sf(np.abs(zmat_orig)) * 2.0
 
-            for measure_index, measure in enumerate(measures):
-                fname = '{}/{}/{}.orig.sumstats.gz'.format(os.path.dirname(out),folder_uni, measure)
-                print('Generate {}...'.format(fname))
-                bim['PVAL'] = np.transpose(pval_orig[measure_index, :])
-                bim['Z'] = np.transpose(zmat_orig[measure_index, :])
-                bim['BETA'] = np.transpose(beta_orig[measure_index, :])
-                bim['SE'] = np.transpose(se_orig[measure_index, :])
-                bim.to_csv(fname, compression='gzip', sep='\t', index=False)
+                for measure_index, measure in enumerate(measures):
+                    fname = '{}/{}/{}.orig.sumstats.gz'.format(os.path.dirname(out),folder_uni, measure)
+                    print('Generate {}...'.format(fname))
+                    bim['PVAL'] = np.transpose(pval_orig[measure_index, :])
+                    bim['Z'] = np.transpose(zmat_orig[measure_index, :])
+                    bim['BETA'] = np.transpose(beta_orig[measure_index, :])
+                    bim['SE'] = np.transpose(se_orig[measure_index, :])
+                    bim.to_csv(fname, compression='gzip', sep='\t', index=False)
 
-            del beta_orig
-            del se_orig
-            del pval_orig
+                del beta_orig
+                del se_orig
+                del pval_orig
         del zmat_orig
 
 

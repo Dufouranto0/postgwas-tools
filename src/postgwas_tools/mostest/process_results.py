@@ -3,11 +3,10 @@ import numpy as np
 import scipy.io as sio
 import matplotlib.pyplot as plt
 import scipy.stats as stats
-import h5py
-import sys
+import argparse
 
 def main():
-    if len(sys.argv) <= 2:
+    """if len(sys.argv) <= 2:
         print('Usage: process_results.py <bim> <fname> [<out>], where')
         print(' bim   - path to bim file (reference set of SNPs')
         print(' fname - prefix of .mat files output by mostest.m, ie. fname should be the same as "out" argument of the mostest.m')
@@ -16,16 +15,44 @@ def main():
 
     bim_file = sys.argv[1] #'UKB26502_QCed_230519_maf0p005_chr21.bim'
     fname = sys.argv[2]    # 'all_chr21'
-    out = sys.argv[3] if (len(sys.argv) > 3) else sys.argv[2]
+    out = sys.argv[3] if (len(sys.argv) > 3) else sys.argv[2]"""
+
+    parser = argparse.ArgumentParser(
+        description=(
+            "Extract mostest results.\n"
+            "Usage: process_results.py <bim> <fname> [<out>]\n"
+            "where:\n"
+            "  bim   - path to .bim file (reference set of SNPs)\n"
+            "  fname - prefix of .mat files output by mostest.m\n"
+            "  out   - optional suffix for output files (defaults to fname)"
+        )
+    )
+
+    # Define positional arguments
+    parser.add_argument("bim", type=str,
+                        help="Path to .bim file (reference set of SNPs)")
+    parser.add_argument("fname", type=str,
+                        help="Prefix of .mat files output by mostest.m")
+    parser.add_argument("out", default=None,
+                        help="Optional suffix for output files (defaults to fname)")
+
+    # Parse CLI arguments
+    args = parser.parse_args()
+
+    # Apply logic: use fname as out if not provided
+    bim_file = args.bim
+    fname = args.fname
+    out = args.out if args.out else fname
 
     # read .bim file (reference set of SNPs)
     print('Load {}...'.format(bim_file))
     bim = pd.read_csv(bim_file, sep='\t', header=None, names='CHR SNP GP BP A1 A2'.split())
     del bim['GP']
 
-    # save figures with  QQ plots MOST and minP
-    print('Generate {}.plot.png...'.format(out))
     mat = sio.loadmat(fname + '.mat')
+
+    """# save figures with  QQ plots MOST and minP
+    print('Generate {}.plot.png...'.format(out))
     with np.errstate(divide='ignore'):
         df = pd.DataFrame({
         'minp_x':np.transpose(mat['hv_maxlogpvecs'].flatten()),
@@ -46,7 +73,7 @@ def main():
     plt.plot(df['most_x'], df['most_y2'])
     plt.title('MOSTest')
     plt.legend(['data (null)', 'MOSTest (model)'])
-    plt.savefig(out + '.plot.png', bbox_inches='tight')
+    plt.savefig(out + '.plot.png', bbox_inches='tight')"""
 
     # generate .sumstats files, compatible with FUMA
     print('Generate {}.***.sumstats files...'.format(out))
