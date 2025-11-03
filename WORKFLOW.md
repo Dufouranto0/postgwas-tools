@@ -45,6 +45,10 @@ process_results_ext \
   --fname results/all_chr21
 ```
 
+**Example output:**
+
+![Correlation matrix Example](Corr_matrix_Large_CINGULATE_left.png)
+
 See https://github.com/precimed/mostest?tab=readme-ov-file for more details.
 
 ---
