@@ -51,14 +51,14 @@ def plot_manhattan(file_paths, plot_type, output_folder):
             for chrom in chromosomes:
                 dic_start_end_chr[chrom] = [df[df["CHR"]==chrom]["BP"].min(),df[df["CHR"]==chrom]["BP"].max()]
 
-        # Filter significant SNPs
-        df = df[df["P"] < 1] #1e-3
+        # Filter SNPs
+        df = df[df["P"] < 1e-2] #1e-3
 
         if plot_type == 'manhattan':
             df['neg_log10_pval'] = -np.log10(df['P'])
 
         elif plot_type == 'miami':
-            if "non.white.British.ancestry" in file:#i%2==1:
+            if i%2==0:#"All" in file:#i%2==1:
                 df['neg_log10_pval'] = np.log10(df['P'])
             else:
                 df['neg_log10_pval'] = -np.log10(df['P'])
@@ -93,8 +93,17 @@ def plot_manhattan(file_paths, plot_type, output_folder):
     chromosome_ticks = [chrom_offsets[chrom] + df[df['CHR'] == chrom]['BP'].max() / 2 for chrom in sorted(df['CHR'].unique())]
     chromosome_labels = [f"{chrom}" for chrom in sorted(df['CHR'].unique())]
     plt.xticks(chromosome_ticks, chromosome_labels, fontsize=16) #rotation=45
-    plt.yticks(fontsize=16)
     plt.xlim([dic_start_end_chr[1][0] + chrom_offsets[1] - 13_000_000, dic_start_end_chr[22][1] + chrom_offsets[22]+ 13_000_000])
+
+    if plot_type=='miami':
+        # Define custom y-axis ticks
+        max_y = np.ceil(df['neg_log10_pval'].abs().max())  # find the largest absolute y value
+        step = max_y*2//10+1
+        yticks_pos = np.arange(-max_y-2, max_y + 2, step)           
+        yticks = np.abs(np.array(yticks_pos ))
+        plt.yticks(yticks_pos, yticks)
+
+    plt.yticks(fontsize=16)
     if plot_type == 'manhattan':
         plt.ylim(bottom=0)
     #plt.legend(loc='upper right',
@@ -130,6 +139,7 @@ def main():
     file_paths = find_files(args.paths)
     plot_type = args.kind
     output_folder = args.out
+    output_folder = output_folder.replace('/', '') if output_folder.endswith('/') else output_folder
 
     if not file_paths:
         print("No files found. Please check your paths or patterns.")
