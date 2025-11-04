@@ -15,8 +15,17 @@ The original scripts were updated to use the `argparse` module instead of manual
 process_results \
   --bim data/reference/UKB26502_QCed_230519_maf0p005_chr21.bim \
   --fname results/all_chr21 \
-  --out results/all_chr21_processed \
+  --out results/out \
 ```
+
+**Example out.most_orig.sumstats:**
+
+| CHR | SNP          | BP        | A1 | A2 | PVAL                 | Z_FAKE             | N       |
+| --- | ----------   | --------- | -- | -- | -------------------- | ------------------ | ------  |
+| 1   | rs12238997   | 693731    | A  | G  | 0.50225630850675     | 0.6709438372570653 | 32964.0 |
+| 1   | rs200531508  | 711310    | G  | A  | 0.8217888252639312   | 0.2252448181865746 | 32576.0 |
+| 1   | rs570631764  | 713914    | A  | G  | 0.25621477331660036  | 1.1353832532589765 | 33259.0 |
+| 1   | rs114983708  | 714019    | A  | G  | 0.26620348259207177  | 1.1118480631888468 | 33202.0 |
 
 #### To get the correlation matrix and the univariate results
 
@@ -24,7 +33,7 @@ process_results \
 process_results_ext \
   --bim data/reference/UKB26502_QCed_230519_maf0p005_chr21.bim \
   --fname results/all_chr21 \
-  --out results/all_chr21_processed \
+  --out results/out \
   --uniGWAS
 ```
 
@@ -37,7 +46,7 @@ process_results_ext \
   --uniGWAS
 ```
 
-If you **don’t care about `uniGWAS`**, you can skip it completely:
+If you **don’t care about `uniGWAS`**, you can skip it completely, when not specifying --uniGWAS:
 
 ```bash
 process_results_ext \
@@ -46,6 +55,8 @@ process_results_ext \
 ```
 
 **Example output:**
+
+When using MOSTest, a separate GWAS is performed for each phenotype. Consequently, each SNP is associated with a vector of z-scores — one value per phenotype (e.g., 32 z-scores if there are 32 phenotypes). The following correlation matrix represents the pairwise correlations between these 32-dimensional z-score vectors for each pair of SNPs.
 
 ![Correlation matrix Example](docs/images/Corr_matrix_Large_CINGULATE_left.png)
 
@@ -226,32 +237,49 @@ extract_h2 -p ldsc/h2/*.log \
 | dim15 | 0.0716 | 0.0154 | 1.0496   | 1.0605    | 1.0105    |
 
 
-```bash
-extract_gencorr -p ldsc/SCZcorr/*.log \
-                -o results
-```
+To extract LDSC genetic correlation results from `.log` files and save them to a `.tsv` table:
+
 
 ```bash
-mahalanobis_gencorr --folder ldsc/SCZcorr \
-                    --prefix scz_ \ 
-                    --multphen initial_multphen.csv \
-                    --out ldsc/SCZcorr
+extract_gencorr -p ldsc/SCZcorr/scz_dim*.log \
+                -o results \
+                --prefix scz_
 ```
 
-**Example output:**
 
-```
-Loading Z-scores...
-Found 32 phenotypes:
- ['dim1', 'dim10', 'dim11', ..., 'dim32']
-Computing phenotype correlation...
-Performing Mahalanobis test...
 
-=== Meta LDSC Mahalanobis Test ===
-Chi² statistic = 110.4389
-Degrees of freedom = 32
-P-value = 1.47e-10
+**Example output (`gencorr_summary.tsv`):**
+
+| pheno | gencov  | gencorr  | se     | zscore | P      |
+| ----- | ------- | -------- | ------ | ------ | ------ |
+| dim1  |-0.0157  | -0.0778  | 0.0448 | -1.736 | 0.0824 |
+| dim2  |0.0158	  | 0.0875   | 0.0452 | 1.933  | 0.0532 |	
+| dim3  |0.0047	  | 0.0247   | 0.0423 | 0.5842 | 0.5591 |
+
+
+And if you want to compute an omnibus test on the different results to combine them in a meta analysis, cou can add:
+It will only keep the phenotypes where the h2 can be estimated, to remove noise from the test.
+(If a phenotype yields a line such as `Genetic Correlation: nan (nan) (h2  out of bounds)` in the `.log` file, it won't be taken into account within the test.)
+
+```bash
+extract_gencorr -p ldsc/scz_dim*.log \
+                -o tests \
+                --prefix scz_ \
+                --omnibus
 ```
+
+**Example output (`meta_scz_ldsc.json`):**
+
+{
+    "chi2_statistic": 7.094600250000001,
+    "degrees_of_freedom": 3,
+    "p_value": 0.06894289054589708,
+    "phenotypes": [
+        "dim1",
+        "dim2",
+        "dim3"
+    ]
+}
 
 ---
 
