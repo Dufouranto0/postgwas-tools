@@ -76,7 +76,7 @@ def main():
     # Find all relevant files
     file_paths = find_files(args.paths)
     out = args.out
-    out = os.path.dirname(out)
+    out = out.replace('/', '') if out.endswith('/') else out
 
     # Call the plotting function with the found file paths
     h2_dic = {"pheno":[], "h2":[], "se":[], "lambdaGC":[], "Mean_Chi2":[], "Intercept":[]}
