@@ -159,7 +159,9 @@ light_manhattan_plot -p /data/gwas.sumstats \
 ## Multi-Model Manhattan Plot
 
 If you want to plot many results on a same figure to compare different phenotypes, you can.
-Generate a combined Manhattan plot for multiple GWAS result files:
+Also, you can apply a threshold on the maximum `-log10(p-value)` to avoid having a shrinked manhattan plot because of a very low p-value.
+To do so, use `--ymax` with the value `40` for instance.
+Generate a combined Manhattan plot for multiple GWAS results in a `manhattan_plot.png`:
 
 ```bash
 manhattan_plot -p /data/gwas1.sumstats /data/gwas2.sumstats /data/gwas3.sumstats \
@@ -178,6 +180,19 @@ manhattan_plot -p "/data/*.sumstats" \
 
 ![Manhattan Example](docs/images/manhattan_example.png)
 
+If you want to make a Miami plot, it is possible as well. 
+Specify the kind with -k as miami to obtain a `miami_plot.png`.
+
+```bash
+manhattan_plot -p /data/gwas1.sumstats /data/gwas2.sumstats \
+               -k miami \
+               --ymax 40 \
+               -o results
+```
+
+**Example output:**
+
+![Miami Example](docs/images/miami_plot.png)
 ---
 
 ## QQ Plot
