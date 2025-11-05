@@ -145,7 +145,7 @@ Annotations from the previous step (e.g., lead SNP names) can be added.
 Both `GenomicRiskLoci.txt` and `leadSNPs.txt` are supported.
 
 ```bash
-light_manhattan_plot -p /data/gwas.sumstats \
+manhattan_plot -p /data/gwas.sumstats \
                      --lead-snps GenomicRiskLoci.txt \
                      -o results
 ```
