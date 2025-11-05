@@ -68,12 +68,7 @@ def correlation_heatmap(z_score, path_to_save, name):
 
 def main():
     parser = argparse.ArgumentParser(
-        description=(
-            "Extract mostest results.\n"
-            "Usage: process_results_ext.py --bim <bim> --fname <fname> --out <out> --uniGWAS\n"
-            "where:"
-        )
-    )
+        description=("Extract mostest results.\n"))
     parser.add_argument("--bim", type=str,
                         help="Path to .bim file (reference set of SNPs)", required=True)
     parser.add_argument("--fname", type=str,

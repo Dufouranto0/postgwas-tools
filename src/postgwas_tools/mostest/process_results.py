@@ -7,29 +7,8 @@ import scipy.stats as stats
 import argparse
 
 def main():
-    """if len(sys.argv) <= 2:
-        print('Usage: process_results.py <bim> <fname> [<out>], where')
-        print(' bim   - path to bim file (reference set of SNPs')
-        print(' fname - prefix of .mat files output by mostest.m, ie. fname should be the same as "out" argument of the mostest.m')
-        print(' out   - optional suffix for output files, by defautl fname will be used')
-        sys.exit()
-
-    bim_file = sys.argv[1] #'UKB26502_QCed_230519_maf0p005_chr21.bim'
-    fname = sys.argv[2]    # 'all_chr21'
-    out = sys.argv[3] if (len(sys.argv) > 3) else sys.argv[2]"""
-
     parser = argparse.ArgumentParser(
-        description=(
-            "Extract mostest results.\n"
-            "Usage: process_results.py <bim> <fname> [<out>]\n"
-            "where:\n"
-            "  bim   - path to .bim file (reference set of SNPs)\n"
-            "  fname - prefix of .mat files output by mostest.m\n"
-            "  out   - optional suffix for output files (defaults to fname)"
-        )
-    )
-
-    # Define positional arguments
+        description=("Extract mostest results.\n"))
     parser.add_argument("bim", type=str,
                         help="Path to .bim file (reference set of SNPs)")
     parser.add_argument("fname", type=str,
