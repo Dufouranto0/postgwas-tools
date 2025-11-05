@@ -21,6 +21,16 @@ pip install -e .
 pip install postgwas-tools
 ```
 
+### Option 3 - 
+```bash
+git clone https://github.com/Dufouranto0/postgwas-tools.git
+cd postgwas-tools
+# push-docker-tgcc.sh is a command from InstallTGCC
+push-docker-tgcc.sh -s `pwd` -d postgwas -t 1.0 -r n4h00001rs
+# connect TGCC
+pcocc-rs run n4h00001rs:postgwas-1.0 -h
+```
+
 ---
 
 ## Package Structure
