@@ -45,9 +45,8 @@ leadSNP = "postgwas_tools.annot.fuma.leadSNP:main"
 
 extract_gencorr = "postgwas_tools.annot.ldsc.extract_gencorr:main"
 extract_h2 = "postgwas_tools.annot.ldsc.extract_h2:main"
-mahalanobis_gencorr = "postgwas_tools.annot.ldsc.mahalanobis_gencorr:main"
 
-proces_results_ext = "postgwas_tools.mostest.proces_results_ext:main"
-proces_results = "postgwas_tools.mostest.proces_results:main"
+proces_results_ext = "postgwas_tools.mostest.process_results_ext:main"
+proces_results = "postgwas_tools.mostest.process_results:main"
 
 replication_by_rsid = "postgwas_tools.annot.replication.replication_by_rsid:main"
