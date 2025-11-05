@@ -19,7 +19,7 @@ python3 leadSNP.py \
   --out results
 
 This script:
- - runs PLINK clumping for loci (r2=r2_loci) and independent snps (r2=r2_ind),
+ - runs PLINK clumping for lead (r2=r2_lead) and independent snps (r2=r2_ind),
  - expands locus windows using all SNPs listed in SP2+lead,
  - merges loci within merge-distance (kb) on same chromosome,
  - writes GenomicRiskLoci.txt, leadSNPs.txt, IndSigSNPs.txt, params.config
@@ -39,7 +39,7 @@ def parse_args():
     p.add_argument("--col-a2", default="A2", help="Column name for other allele / A2 (default: A2)")
     p.add_argument("--bfile", required=True, help="PLINK --bfile prefix (path to .bed/.bim/.fam without extension)")
     p.add_argument("--plink", default="plink", help="PLINK binary to call (default 'plink')")
-    p.add_argument("--r2-loci", type=float, default=0.1, help="r2 for loci clumping (default: 0.1)")
+    p.add_argument("--r2-lead", type=float, default=0.1, help="r2 for lead SNP clumping (default: 0.1)")
     p.add_argument("--r2-ind", type=float, default=0.6, help="r2 for independent SNPs clumping (default: 0.6)")
     p.add_argument("--clump-p1", type=float, default=5e-8, help="PLINK --clump-p1 (default 5e-8)")
     p.add_argument("--clump-p2", type=float, default=5e-6, help="PLINK --clump-p2 (default 5e-6)")
@@ -140,16 +140,16 @@ def parse_SP2_field(sp2_field):
             snps.append(snp)
     return snps
 
-def compute_locus_windows_from_clumps(loci_df, good_sumstats_df):
+def compute_locus_windows_from_clumps(lead_df, good_sumstats_df):
     """
-    From PLINK clump loci (r2=r2_loci), compute locus windows (start/end) using all SNPs
+    From PLINK clump lead (r2=r2_lead), compute locus windows (start/end) using all SNPs
     mentioned in each clump's SP2 plus lead SNP.
 
     Returns:
       windows_df: DataFrame with columns: CHR, LeadSNP, LeadP, Start, End, nSNPs, SNPs
       lead_to_sp2: dict mapping lead_snp -> list_of_sp2_snps (does NOT filter by independent set here)
     """
-    if loci_df.empty:
+    if lead_df.empty:
         return pd.DataFrame(columns=["CHR","LeadSNP","LeadP","Start","End","nSNPs","SNPs"]), {}
 
     # mapping SNP -> BP and P from good sumstats
@@ -159,7 +159,7 @@ def compute_locus_windows_from_clumps(loci_df, good_sumstats_df):
     records = []
     lead_to_sp2 = {}
 
-    for _, row in loci_df.iterrows():
+    for _, row in lead_df.iterrows():
         lead_snp = str(row.get('SNP', row.get('snp', None)))
         if lead_snp is None or lead_snp.upper() == "NONE":
             continue
@@ -511,7 +511,7 @@ def main():
     clump_lead_prefix = os.path.join(outdir, "clump_lead")
     clump_ind_prefix = os.path.join(outdir, "clump_ind")
 
-    clumped_loci_path = run_plink_clump(args.plink,
+    clumped_lead_path = run_plink_clump(args.plink,
                                         args.bfile,
                                         okstats_path,
                                         clump_lead_prefix,
@@ -529,17 +529,17 @@ def main():
                                        args.clump_kb)
 
     # Read PLINK outputs
-    loci_df = read_clumped(clumped_loci_path)
+    lead_df = read_clumped(clumped_lead_path)
     ind_df = read_clumped(clumped_ind_path)
 
     # Normalize column names if needed (p -> P)
-    for d in (loci_df, ind_df):
+    for d in (lead_df, ind_df):
         if not d.empty and 'P' not in d.columns and 'p' in d.columns:
             d.rename(columns={'p': 'P'}, inplace=True)
 
     # Compute windows from r2_loci clumps using all SNPs listed (SP2)
     print("Computing locus windows from r2_loci clumps (expanding with SP2 SNPs)...")
-    windows_df, lead_to_sp2 = compute_locus_windows_from_clumps(loci_df, good_df)
+    windows_df, lead_to_sp2 = compute_locus_windows_from_clumps(lead_df, good_df)
     if windows_df.empty:
         print("No locus windows computed (no clumps or missing data). Exiting.")
         # still write params.config
