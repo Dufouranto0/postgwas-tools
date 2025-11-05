@@ -507,7 +507,7 @@ def main():
     except Exception:
         pass
 
-    # Run PLINK clumping for loci (r2_loci) and independents (r2_ind)
+    # Run PLINK clumping for lead (r2_lead) and independents (r2_ind)
     clump_lead_prefix = os.path.join(outdir, "clump_lead")
     clump_ind_prefix = os.path.join(outdir, "clump_ind")
 
@@ -517,7 +517,7 @@ def main():
                                         clump_lead_prefix,
                                         args.clump_p1,
                                         args.clump_p2,
-                                        args.r2_loci,
+                                        args.r2_lead,
                                         args.clump_kb)
     clumped_ind_path = run_plink_clump(args.plink,
                                        args.bfile,
@@ -537,8 +537,8 @@ def main():
         if not d.empty and 'P' not in d.columns and 'p' in d.columns:
             d.rename(columns={'p': 'P'}, inplace=True)
 
-    # Compute windows from r2_loci clumps using all SNPs listed (SP2)
-    print("Computing locus windows from r2_loci clumps (expanding with SP2 SNPs)...")
+    # Compute windows from r2_lead clumps using all SNPs listed (SP2)
+    print("Computing locus windows from r2_lead clumps (expanding with SP2 SNPs)...")
     windows_df, lead_to_sp2 = compute_locus_windows_from_clumps(lead_df, good_df)
     if windows_df.empty:
         print("No locus windows computed (no clumps or missing data). Exiting.")
