@@ -202,7 +202,7 @@ def plot_miami(file_paths, output_folder, y_max=None):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Generate Manhattan plots for one or multiple GWAS summary statistics files."
+        description="Generate Manhattan plots for one or multiple GWAS summary statistics."
     )
     parser.add_argument(
         '-p', '--paths', nargs='+', type=str, required=True,

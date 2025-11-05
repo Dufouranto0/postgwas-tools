@@ -9,11 +9,11 @@ import argparse
 def main():
     parser = argparse.ArgumentParser(
         description=("Extract mostest results.\n"))
-    parser.add_argument("bim", type=str,
+    parser.add_argument("--bim", type=str,
                         help="Path to .bim file (reference set of SNPs)")
-    parser.add_argument("fname", type=str,
+    parser.add_argument("--fname", type=str,
                         help="Prefix of .mat files output by mostest.m")
-    parser.add_argument("out", default=None,
+    parser.add_argument("--out", default=None,
                         help="Optional suffix for output files (defaults to fname)")
 
     # Parse CLI arguments
