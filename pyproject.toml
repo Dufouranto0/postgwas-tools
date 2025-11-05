@@ -37,7 +37,7 @@ Issues = "https://github.com/Dufouranto0/postgwas-tools/issues"
 where = ["src"]
 
 [project.scripts]
-light_manhattan_plot = "postgwas_tools.annot.fuma.light_manhattan_plot:main"
+manhattan_plot = "postgwas_tools.annot.fuma.manhattan_plot:main"
 multi_plot = "postgwas_tools.annot.fuma.multi_plot:main"
 QQ_plot = "postgwas_tools.annot.fuma.QQ_plot:main"
 

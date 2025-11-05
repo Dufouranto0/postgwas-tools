@@ -1,4 +1,4 @@
-# coding: utf-8
+#!/usr/bin/env python3
 ##########################################################################
 # NSAp - Copyright (C) CEA, 2023
 # Distributed under the terms of the CeCILL-B license, as published by
@@ -8,17 +8,6 @@
 # Antoine Dufournet
 # Inspired from Vincent Frouin's code
 ##########################################################################
-"""
-Example of usage:
-
-ROOTDIR=/ccc/workflash/cont003/n4h00001/n4h00001
-RESULTSDIR=25irene_AD_allRegionMOSTEST/results/Champollion_V1_32/*/*/32PCs/white.British.ancestry
-
-     python3 $ROOTDIR/LDSC/extract_gencorr.py \
-            -p $ROOTDIR/$RESULTSDIR/SCZ_corr/scz_pheno1.log \
-            -o $ROOTDIR/25irene_AD_allRegionMOSTEST/results/Champollion_V1_32/SCZ_corr/.
-"""
-##########################################################################
 
 import os
 import json
@@ -27,6 +16,29 @@ import numpy as np
 import pandas as pd
 from scipy.stats import chi2
 from postgwas_tools.annot.utils import find_files
+
+
+def _get_h2(path):
+    h2_target = "Total Observed scale h2:"
+    h2_values = []
+
+    with open(path, "rt") as f:
+        lines = f.readlines()
+
+    for line in lines:
+        if h2_target in line:
+            try:
+                # Extract the float before the parentheses
+                h2_str = line.replace(h2_target, "").strip().split(" ", 1)[0]
+                h2_values.append(float(h2_str))
+            except ValueError:
+                print(f"Warning: Could not extract h2 from line: {line.strip()}")
+
+    # Ensure we got exactly two phenotypes
+    if len(h2_values) != 2:
+        print(f"Warning: Expected 2 h2 values, got {len(h2_values)}")
+
+    return tuple(h2_values)
 
 def _get_gencorr(path):
     gencov_target = "Total Observed scale gencov:"
@@ -66,20 +78,22 @@ def _get_gencorr(path):
             break
     return gencov,gencorr,se,zscore,P
 
-def create_df(file_paths, prefix):
+def create_df(file_paths, prefix, h2threshold):
     gencorr_dic = {"pheno":[], "gencov":[], "gencorr":[],"se":[], "zscore":[], "P":[]}
     for file_path in file_paths:
         print(f"Working with file: {file_path}")
         base_name = os.path.basename(file_path)
         pheno = base_name.replace(".log", "")
         pheno = pheno.replace(prefix, "")
-        gencov,gencorr,se,zscore,P = _get_gencorr(file_path)
-        gencorr_dic["pheno"].append(pheno)
-        gencorr_dic["gencov"].append(gencov)
-        gencorr_dic["gencorr"].append(gencorr)
-        gencorr_dic["se"].append(se)
-        gencorr_dic["zscore"].append(zscore)
-        gencorr_dic["P"].append(P)
+        h2_ph1, h2_ph2 = _get_h2(file_path)
+        if h2_ph1 >h2threshold and h2_ph2 > h2threshold:
+            gencov,gencorr,se,zscore,P = _get_gencorr(file_path)
+            gencorr_dic["pheno"].append(pheno)
+            gencorr_dic["gencov"].append(gencov)
+            gencorr_dic["gencorr"].append(gencorr)
+            gencorr_dic["se"].append(se)
+            gencorr_dic["zscore"].append(zscore)
+            gencorr_dic["P"].append(P)
      
     gencorr_df = pd.DataFrame(gencorr_dic)
     return gencorr_df
@@ -112,6 +126,7 @@ def main():
     parser.add_argument("--omnibus", action="store_true",
                         help="Optional flag to do omnibus test as well")
     parser.add_argument("--multphen", default=None, help="Path to the file with the phenotypes")
+    parser.add_argument("--h2threshold", type=float, default=0, help="h2 threshold to decide which phenotype to keep based on the h2 estimation in the .log")
     args = parser.parse_args()
 
     # Find all relevant files
@@ -119,7 +134,7 @@ def main():
     out = args.out
     out = out.replace('/', '') if out.endswith('/') else out
      
-    gencorr_df = create_df(file_paths, args.prefix)
+    gencorr_df = create_df(file_paths, args.prefix, args.h2threshold)
 
     gencorr_df.to_csv(f"{out}/gencorr_summary.tsv", sep='\t', index=False)
     print("Summary of gencorr saved at:","\n", f"{out}/gencorr_summary.tsv")

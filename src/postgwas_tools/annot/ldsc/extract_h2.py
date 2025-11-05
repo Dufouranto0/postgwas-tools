@@ -1,4 +1,4 @@
-# coding: utf-8
+#!/usr/bin/env python3
 ##########################################################################
 # NSAp - Copyright (C) CEA, 2023
 # Distributed under the terms of the CeCILL-B license, as published by
@@ -8,17 +8,7 @@
 # Antoine Dufournet
 # Inspired from Vincent Frouin's code
 ##########################################################################
-"""
-Example of usage:
 
-ROOTDIR=/ccc/workflash/cont003/n4h00001/n4h00001
-RESULTSDIR=25irene_AD_CING_rIG/results/ChampollionV0/CINGULATE_left/09-35-58_201/non.white.British.ancestry
-
-
-     python3 $ROOTDIR/LDSC/extract_h2.py \
-            -p $ROOTDIR/$RESULTSDIR/h2/orig_munge_h2.log \
-            -o $ROOTDIR/$RESULTSDIR/h2/.
-"""
 ##########################################################################
 
 import os

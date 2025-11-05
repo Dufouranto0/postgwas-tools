@@ -1,13 +1,9 @@
+#!/usr/bin/env python3
 """
 Inspired from:
 
 https://github.com/ShujiaHuang/qmplot
 
-
-Example of use:
-
-python3 QQ_plot.py \
-            -p maf-0.01.most_orig.sumstats \
 """
 
 import argparse
