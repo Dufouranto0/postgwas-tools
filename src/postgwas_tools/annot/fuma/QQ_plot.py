@@ -13,7 +13,7 @@ import os
 from postgwas_tools.annot.utils import read_sumstats
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate Manhattan plot for a given summary statistic file.")
+    parser = argparse.ArgumentParser(description="Generate Manhattan plot for a given summary statistic.")
     parser.add_argument('-p', '--path', type=str, 
                         help="File path to the summary statistic file.")
     parser.add_argument('-o', '--out', type=str, default=None,

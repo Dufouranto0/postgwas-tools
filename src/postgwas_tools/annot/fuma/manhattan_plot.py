@@ -128,9 +128,9 @@ def main():
 
     parser = argparse.ArgumentParser(description="Generate Manhattan plot for a given summary statistic file.")
     parser.add_argument('-p', '--path', type=str, 
-                        help="File path to the summary statistic file.")
+                        help="File path to the summary statistic.")
     parser.add_argument('-t', '--title', type=str, default=None,
-                        help="Title you want to plot.")
+                        help="Title you want on top.")
     parser.add_argument('--lead-snps', type=str, default=None,
                     help="Path to lead SNPs file to label on the Manhattan plot.")
     parser.add_argument('-o', '--out', type=str, default=None,
