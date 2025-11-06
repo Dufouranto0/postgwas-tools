@@ -37,6 +37,8 @@ def _get_h2(path):
     # Ensure we got exactly two phenotypes
     if len(h2_values) != 2:
         print(f"Warning: Expected 2 h2 values, got {len(h2_values)}")
+        print("The two h2 values are set to -9.")
+        h2_values = -9,-9
 
     return tuple(h2_values)
 
