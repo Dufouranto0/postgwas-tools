@@ -21,7 +21,11 @@ pip install -e .
 pip install postgwas-tools
 ```
 
-### Option 3 - 
+### Option 3 - remote install from Neurospin to irene (preferred)
+To install the phecovbabel pacakge as a pcocc-rs image on irene!
+ - install the installing tools from https://github.com/neurospin-brainomics/InstallerTGCC
+ - run the following commands
+
 ```bash
 git clone https://github.com/Dufouranto0/postgwas-tools.git
 cd postgwas-tools

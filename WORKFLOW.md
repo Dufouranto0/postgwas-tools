@@ -85,6 +85,8 @@ Internally, the tool runs two PLINK 1.9 commands in sequence.
 To get PLINK 1.9 and the command plink, you can do:
 
 ```bash
+mkdir plink1.9
+cd plink1.9
 wget -q https://s3.amazonaws.com/plink1-assets/plink_linux_x86_64_20250819.zip 
 unzip plink_linux_x86_64_20250819.zip
 rm plink_linux_x86_64_20250819.zip
