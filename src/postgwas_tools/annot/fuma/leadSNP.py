@@ -286,7 +286,7 @@ def sort_by_chr_pos_local(df):
     d = d.drop(columns=['chr_sort', 'pos_sort'])
     return d
 
-def build_outputs(merged_regions, good_sumstats_df, ind_df, outdir):
+def build_outputs(merged_regions, good_sumstats_df, ind_df):
     """
     Build GenomicRiskLoci.txt, leadSNPs.txt, IndSigSNPs.txt
 
@@ -461,6 +461,9 @@ def build_outputs(merged_regions, good_sumstats_df, ind_df, outdir):
     if not ind_df_out.empty:
         ind_df_out = ind_df_out[["No","GenomicLocus","uniqID","rsID","chr","pos","p","nSNPs","nGWASSNPs"]]
 
+    return genomic_df, lead_df, ind_df_out
+
+def write_results(outdir, genomic_df, lead_df, ind_df_out):
     # Write files
     genomic_path = os.path.join(outdir, "GenomicRiskLoci.txt")
     lead_path = os.path.join(outdir, "leadSNPs.txt")
@@ -483,7 +486,22 @@ def build_outputs(merged_regions, good_sumstats_df, ind_df, outdir):
     print(f"Lead SNP table saved to: {lead_path}")
     print(f"Independent SNP table saved to: {ind_path}")
 
-    return genomic_df, lead_df, ind_df_out
+def remove_files(outdir, okstats_path):
+        # list of intermediate files to delete if they exist
+        intermediate_files = [
+            okstats_path,
+            os.path.join(outdir, "clump_ind.clumped"),
+            os.path.join(outdir, "clump_lead.clumped"),
+            os.path.join(outdir, "clump_ind.log"),
+            os.path.join(outdir, "clump_lead.log"),
+        ]
+
+        for f in intermediate_files:
+            try:
+                if os.path.exists(f):
+                    os.remove(f)
+            except Exception:
+                pass
 
 def main():
     args = parse_args()
@@ -548,6 +566,19 @@ def main():
             for k, v in vars(args).items():
                 f.write(f"{k}={v}\n")
         print(f"Parameters saved to: {config_path}")
+        print("Remove intermediate files.")
+        remove_files(outdir, okstats_path)
+        genomic_columns = [
+        "GenomicLocus","uniqID","rsID","chr","pos","p","start","end",
+        "nSNPs","nGWASSNPs","nIndSigSNPs","IndSigSNPs","nLeadSNPs","LeadSNPs"]
+        genomic_df = pd.DataFrame(columns=genomic_columns)
+        lead_columns= ["No","GenomicLocus","uniqID","rsID","chr","pos","p",
+                       "nIndSigSNPs","IndSigSNPs"]
+        lead_df = pd.DataFrame(columns=lead_columns)
+        ind_columns=["No","GenomicLocus","uniqID","rsID","chr","pos","p",
+                     "nSNPs","nGWASSNPs"]
+        ind_df = pd.DataFrame(columns=ind_columns)
+        write_results(outdir, genomic_df, lead_df, ind_df)
         return
 
     # Merge windows by distance (kb)
@@ -557,7 +588,7 @@ def main():
     # Build and write outputs: GenomicRiskLoci.txt, leadSNPs.txt, IndSigSNPs.txt
     print("Building final tables...")
     genomic_df, lead_df, ind_df_out = build_outputs(merged_regions, good_df, ind_df, outdir)
-
+    write_results(outdir, genomic_df, lead_df, ind_df_out)
     # Write params.config
     config_path = os.path.join(outdir, "params.config")
     with open(config_path, "w") as f:
@@ -566,21 +597,7 @@ def main():
     print(f"Parameters saved to: {config_path}")
 
     if not args.keep_intermediate:
-        # list of intermediate files to delete if they exist
-        intermediate_files = [
-            okstats_path,
-            os.path.join(outdir, "clump_ind.clumped"),
-            os.path.join(outdir, "clump_lead.clumped"),
-            os.path.join(outdir, "clump_ind.log"),
-            os.path.join(outdir, "clump_lead.log"),
-        ]
-
-        for f in intermediate_files:
-            try:
-                if os.path.exists(f):
-                    os.remove(f)
-            except Exception:
-                pass
+        remove_files(outdir, okstats_path)
 
 if __name__ == "__main__":
     main()
