@@ -156,7 +156,7 @@ def plot_miami(file_paths, output_folder, y_max=None):
             axes[j].set_ylim(1, top_y_limit)
         else:
             bottom_p_min = min(df["P"].min(), bottom_p_min)
-            bottom_y_limit = min(y_max, -np.log10(bottom_p_min))
+            bottom_y_limit = min(-y_max, -np.log10(bottom_p_min))
             axes[j].axhline(y=-sig1, color='r', linestyle='--')
             axes[j].axhline(y=-sig2, color='g', linestyle='--')
             axes[j].set_ylim(-bottom_y_limit, -2)
