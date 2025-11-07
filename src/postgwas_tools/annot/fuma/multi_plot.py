@@ -103,8 +103,8 @@ def plot_miami(file_paths, output_folder, y_max=None):
     base_colors = ['blue', 'red', 'green', 'purple', 'orange', 'brown', 'pink', 'gray', 'olive', 'cyan']
     chrom_offsets = None
     dic_start_end_chr = {}
-    top_p_min = 1e-2
-    bottom_p_min = 1e-2
+    min_p_top = 1e-2
+    min_p_bot = 1e-2
     if not y_max:
         y_max = 300
     
@@ -149,14 +149,14 @@ def plot_miami(file_paths, output_folder, y_max=None):
         sig2 = -np.log10(0.05 / 10_000)
 
         if j == 0:
-            top_p_min = min(df["P"].min(), top_p_min)
-            top_y_limit = min(y_max, -np.log10(top_p_min))
+            min_p_top = min(df["P"].min(), min_p_top)
+            top_y_limit = min(y_max, -np.log10(min_p_top))
             axes[j].axhline(y=sig1, color='r', linestyle='--')
             axes[j].axhline(y=sig2, color='g', linestyle='--')
             axes[j].set_ylim(1, top_y_limit)
         else:
-            bottom_p_min = min(df["P"].min(), bottom_p_min)
-            bottom_y_limit = min(-y_max, -np.log10(bottom_p_min))
+            min_p_bot = min(df["P"].min(), min_p_bot)
+            bottom_y_limit = min(y_max, -np.log10(min_p_bot))
             axes[j].axhline(y=-sig1, color='r', linestyle='--')
             axes[j].axhline(y=-sig2, color='g', linestyle='--')
             axes[j].set_ylim(-bottom_y_limit, -2)
@@ -237,9 +237,9 @@ def main():
         print(f"   - {f}")
 
     if plot_type == 'manhattan':
-        plot_manhattan(file_paths, output_folder)
+        plot_manhattan(file_paths, output_folder, y_max=args.ymax)
     elif plot_type == 'miami':
-        plot_miami(file_paths, output_folder)
+        plot_miami(file_paths, output_folder, y_max=args.ymax)
 
 if __name__ == "__main__":
     main()
