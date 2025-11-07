@@ -112,7 +112,6 @@ def plot_miami(file_paths, output_folder, y_max=None):
 
     for i, file in enumerate(file_paths):  # Expecting exactly 2 files
         print(f"Reading {file}")
-        model = os.path.basename(os.path.dirname(file))
         df = read_sumstats(file)
         df["P"] = pd.to_numeric(df["P"], errors="coerce")
         df = df.dropna(subset=["P"])
@@ -214,7 +213,7 @@ def main():
         help="Type of plot to generate: 'manhattan' (default) or 'miami'"
     )
     parser.add_argument(
-        '-o', '--out', type=str, default='.',
+        '-o', '--out', type=str, required=True,
         help="Output folder for saving the plot."
     )
     parser.add_argument(

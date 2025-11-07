@@ -45,7 +45,7 @@ def parse_args():
     p.add_argument("--clump-p2", type=float, default=5e-6, help="PLINK --clump-p2 (default 5e-6)")
     p.add_argument("--clump-kb", type=int, default=1000, help="PLINK --clump-kb (default 1000)")
     p.add_argument("--merge-distance", type=int, default=250, help="distance in kb to merge loci (default 250)")
-    p.add_argument("--out", default="results", help="Output directory (default 'results')")
+    p.add_argument("--out", required=True, help="Output directory")
     p.add_argument("--keep-intermediate", action="store_true", help="Keep intermediate reformatted sumstats file")
     return p.parse_args()
 

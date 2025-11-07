@@ -43,8 +43,8 @@ def find_files(paths):
 
         all_files.extend(matched)
 
-    # Deduplicate and sort
-    all_files = sorted(list(set(all_files)))
+    # Deduplicate
+    all_files = list(set(all_files))
     return all_files
 
 def adjust_color_brightness(color, factor):
